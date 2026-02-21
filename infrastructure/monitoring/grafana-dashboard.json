@@ -1,0 +1,73 @@
+{
+  "dashboard": {
+    "title": "IntelliDoc Nexus",
+    "uid": "intellidoc-main",
+    "timezone": "browser",
+    "panels": [
+      {
+        "title": "Request Rate",
+        "type": "timeseries",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+        "targets": [
+          {
+            "expr": "rate(intellidoc_http_requests_total[5m])",
+            "legendFormat": "{{method}} {{endpoint}} {{status_code}}"
+          }
+        ]
+      },
+      {
+        "title": "Request Latency (p95)",
+        "type": "timeseries",
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(intellidoc_http_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "{{endpoint}}"
+          }
+        ]
+      },
+      {
+        "title": "Active Connections",
+        "type": "stat",
+        "gridPos": { "h": 4, "w": 6, "x": 0, "y": 8 },
+        "targets": [
+          { "expr": "intellidoc_active_connections" }
+        ]
+      },
+      {
+        "title": "Documents Processed",
+        "type": "stat",
+        "gridPos": { "h": 4, "w": 6, "x": 6, "y": 8 },
+        "targets": [
+          { "expr": "intellidoc_documents_processed_total" }
+        ]
+      },
+      {
+        "title": "RAG Query Latency",
+        "type": "timeseries",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 },
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(intellidoc_rag_query_duration_seconds_bucket[5m]))",
+            "legendFormat": "p95 {{mode}}"
+          },
+          {
+            "expr": "histogram_quantile(0.50, rate(intellidoc_rag_query_duration_seconds_bucket[5m]))",
+            "legendFormat": "p50 {{mode}}"
+          }
+        ]
+      },
+      {
+        "title": "Error Rate",
+        "type": "timeseries",
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 },
+        "targets": [
+          {
+            "expr": "rate(intellidoc_http_requests_total{status_code=~'5..'}[5m]) / rate(intellidoc_http_requests_total[5m])",
+            "legendFormat": "Error Rate"
+          }
+        ]
+      }
+    ]
+  }
+}
