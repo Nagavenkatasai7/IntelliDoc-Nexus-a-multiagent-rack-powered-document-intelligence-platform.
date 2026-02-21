@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import { Download, FileText, Copy, Check } from 'lucide-react'
+import { Download, Copy, Check } from 'lucide-react'
 import { useChatStore } from '@/stores/chatStore'
 import type { ChatMessage } from '@/types'
 
 export default function ConversationExport() {
-  const { messages, currentSessionId } = useChatStore()
+  const { messages } = useChatStore()
   const [copied, setCopied] = useState(false)
 
   if (messages.length === 0) return null

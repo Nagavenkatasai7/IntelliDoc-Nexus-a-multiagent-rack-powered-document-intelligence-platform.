@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { FileText, Trash2, Loader2, Clock, CheckCircle2, XCircle } from 'lucide-react'
 import { listDocuments, deleteDocument } from '@/services/api'
-import { formatFileSize, formatDate } from '@/lib/utils'
+import { formatFileSize } from '@/lib/utils'
 import { useChatStore } from '@/stores/chatStore'
 import type { Document } from '@/types'
 

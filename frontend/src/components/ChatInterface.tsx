@@ -4,7 +4,7 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { useChatStore } from '@/stores/chatStore'
 import { streamChat, sendMessage } from '@/services/api'
-import type { ChatMessage, SourceReference } from '@/types'
+import type { ChatMessage } from '@/types'
 import SourceCitations from './SourceCitations'
 
 export default function ChatInterface() {
@@ -70,7 +70,7 @@ export default function ChatInterface() {
           resetStreamContent()
           setIsStreaming(false)
         },
-        (errorMsg) => {
+        (_errorMsg) => {
           // Error callback from stream — will also throw, caught below
         },
       )

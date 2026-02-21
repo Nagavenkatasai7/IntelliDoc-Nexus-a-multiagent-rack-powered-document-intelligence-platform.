@@ -1,5 +1,4 @@
-import { useState } from 'react'
-import { X, FileText, ChevronLeft, ChevronRight } from 'lucide-react'
+import { X, FileText } from 'lucide-react'
 import type { Document } from '@/types'
 import { formatFileSize, formatDate } from '@/lib/utils'
 

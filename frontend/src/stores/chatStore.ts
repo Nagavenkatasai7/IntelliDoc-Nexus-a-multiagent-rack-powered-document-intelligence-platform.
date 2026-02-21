@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { ChatMessage, SourceReference } from '@/types'
+import type { ChatMessage } from '@/types'
 
 interface ChatState {
   messages: ChatMessage[]
