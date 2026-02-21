@@ -1,12 +1,13 @@
 # Vercel Serverless Python Dependencies
-# NOTE: This is a trimmed version for serverless deployment.
-# Heavy ML deps (sentence-transformers, numpy) are excluded due to Vercel's 250MB limit.
+# Trimmed to fit 250MB serverless limit.
+# Document processing, ML embeddings, and vector search are excluded.
+# Full deps available in backend/requirements.txt for Docker deployment.
 
 # Core
 fastapi>=0.109.2
 python-multipart==0.0.9
 
-# Database (SQLite for serverless, upgrade to Neon PostgreSQL for persistence)
+# Database
 sqlalchemy[asyncio]==2.0.27
 aiosqlite==0.20.0
 
@@ -17,18 +18,8 @@ pydantic-settings>=2.4.0
 # LLM & AI
 anthropic>=0.40.0
 
-# Vector Store (optional - install pinecone>=5.0.0 if using Neon+Pinecone)
-# pinecone>=5.0.0
-
-# Document Processing
-pypdf2==3.0.1
-pdfplumber==0.10.4
-python-docx==1.1.0
-
 # Search
 rank-bm25==0.2.2
-# tiktoken excluded from serverless (requires Rust compilation)
-# Falls back to char-based token counting in chunker.py
 
 # Auth & Security
 python-jose[cryptography]==3.3.0
@@ -36,7 +27,6 @@ passlib[bcrypt]==1.7.4
 bcrypt==4.1.2
 
 # Observability
-prometheus-client==0.20.0
 structlog==24.1.0
 
 # Utils

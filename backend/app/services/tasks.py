@@ -4,23 +4,37 @@ import uuid
 import asyncio
 from datetime import datetime, timezone
 
-from celery import shared_task
-from sqlalchemy import create_engine, select
-from sqlalchemy.orm import Session, sessionmaker
+try:
+    from celery import shared_task
+except ImportError:
+    # Celery not available (e.g., serverless deployment)
+    def shared_task(*args, **kwargs):
+        def decorator(func):
+            func.delay = lambda *a, **kw: None
+            return func
+        if args and callable(args[0]):
+            return decorator(args[0])
+        return decorator
 
 from app.core.config import get_settings
 from app.core.logging import get_logger
-from app.models.document import Document, DocumentChunk, DocumentStatus
-from app.services.document_processor import DocumentProcessor
-from app.services.chunker import SemanticChunker
-from app.services.embedding import EmbeddingService
 
 logger = get_logger(__name__)
 settings = get_settings()
 
-# Sync engine for Celery (Celery doesn't support async)
-sync_engine = create_engine(settings.database_url_sync, pool_pre_ping=True)
-SyncSession = sessionmaker(sync_engine, class_=Session)
+# Lazy sync engine creation (avoid crash if database_url_sync is invalid)
+_sync_engine = None
+_SyncSession = None
+
+
+def _get_sync_session():
+    global _sync_engine, _SyncSession
+    if _SyncSession is None:
+        from sqlalchemy import create_engine
+        from sqlalchemy.orm import Session, sessionmaker
+        _sync_engine = create_engine(settings.database_url_sync, pool_pre_ping=True)
+        _SyncSession = sessionmaker(_sync_engine, class_=Session)
+    return _SyncSession
 
 
 @shared_task(
@@ -38,6 +52,12 @@ def process_document_task(self, document_id: str, file_content_hex: str, filenam
         file_content_hex: Hex-encoded file bytes
         filename: Original filename
     """
+    from sqlalchemy import select
+    from app.models.document import Document, DocumentChunk, DocumentStatus
+    from app.services.document_processor import DocumentProcessor
+    from app.services.chunker import SemanticChunker
+    from app.services.embedding import EmbeddingService
+
     task_id = self.request.id
     logger.info("task_started", task_id=task_id, document_id=document_id, filename=filename)
 
@@ -45,7 +65,7 @@ def process_document_task(self, document_id: str, file_content_hex: str, filenam
     processor = DocumentProcessor()
     chunker = SemanticChunker()
 
-    with SyncSession() as db:
+    with _get_sync_session()() as db:
         doc = db.get(Document, uuid.UUID(document_id))
         if not doc:
             logger.error("document_not_found", document_id=document_id)
@@ -129,7 +149,10 @@ def process_document_task(self, document_id: str, file_content_hex: str, filenam
 @shared_task(name="cleanup_failed_documents")
 def cleanup_failed_documents():
     """Periodic task to clean up documents stuck in PROCESSING state."""
-    with SyncSession() as db:
+    from sqlalchemy import select
+    from app.models.document import Document, DocumentStatus
+
+    with _get_sync_session()() as db:
         stuck_docs = db.execute(
             select(Document).where(Document.status == DocumentStatus.PROCESSING)
         ).scalars().all()

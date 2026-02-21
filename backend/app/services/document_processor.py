@@ -3,9 +3,6 @@ import io
 import time
 from pathlib import Path
 
-import pdfplumber
-from docx import Document as DocxDocument
-
 from app.core.config import get_settings
 from app.core.logging import get_logger
 
@@ -82,6 +79,8 @@ class DocumentProcessor:
         return result
 
     def _extract_pdf(self, content: bytes) -> dict:
+        import pdfplumber
+
         pages = []
         full_text_parts = []
         metadata = {}
@@ -126,6 +125,8 @@ class DocumentProcessor:
         }
 
     def _extract_docx(self, content: bytes) -> dict:
+        from docx import Document as DocxDocument
+
         doc = DocxDocument(io.BytesIO(content))
         paragraphs = []
         full_text_parts = []
