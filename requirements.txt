@@ -1,6 +1,5 @@
 # Vercel Serverless Python Dependencies
-# Trimmed to fit 250MB serverless limit.
-# Document processing, ML embeddings, and vector search are excluded.
+# Aggressively trimmed to fit 250MB serverless limit.
 # Full deps available in backend/requirements.txt for Docker deployment.
 
 # Core
@@ -18,15 +17,12 @@ pydantic-settings>=2.4.0
 # LLM & AI
 anthropic>=0.40.0
 
-# Search
-rank-bm25==0.2.2
-
 # Auth & Security
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
 bcrypt==4.1.2
 
-# Observability
+# Logging
 structlog==24.1.0
 
 # Utils

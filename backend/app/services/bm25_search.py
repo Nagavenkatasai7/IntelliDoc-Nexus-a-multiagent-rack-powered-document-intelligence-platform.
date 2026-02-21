@@ -1,7 +1,11 @@
 import re
-from rank_bm25 import BM25Okapi
 
 from app.core.logging import get_logger
+
+try:
+    from rank_bm25 import BM25Okapi
+except ImportError:
+    BM25Okapi = None
 
 logger = get_logger(__name__)
 
