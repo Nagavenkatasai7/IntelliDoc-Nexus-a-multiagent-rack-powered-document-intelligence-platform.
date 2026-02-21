@@ -27,6 +27,9 @@ class BM25SearchService:
 
     def build_index(self, namespace: str, chunks: list[dict]) -> None:
         """Build BM25 index for a set of chunks."""
+        if BM25Okapi is None:
+            logger.warning("bm25_unavailable", reason="rank_bm25 not installed")
+            return
         tokenized_corpus = [self._tokenize(c["content"]) for c in chunks]
         bm25 = BM25Okapi(tokenized_corpus)
         self._indices[namespace] = {"bm25": bm25, "chunks": chunks}
